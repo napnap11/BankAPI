@@ -17,11 +17,11 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 func (s *UserServiceImpl) All() (users []User, err error) {
-	rows, err := s.db.Query("SELECT id, first_name, last_name FROM users")
+	rows, err := s.DB.Query("SELECT id, first_name, last_name FROM users")
 	if err != nil {
 		return
 	}
@@ -38,7 +38,7 @@ func (s *UserServiceImpl) All() (users []User, err error) {
 }
 
 func (s *UserServiceImpl) FindByID(id int) (user *User, err error) {
-	rows, err := s.db.Query("SELECT id, first_name, last_name FROM users")
+	rows, err := s.DB.Query("SELECT id, first_name, last_name FROM users")
 	if err != nil {
 		return
 	}
@@ -49,14 +49,14 @@ func (s *UserServiceImpl) FindByID(id int) (user *User, err error) {
 }
 
 func (s *UserServiceImpl) Create(u User) (err error) {
-	row := s.db.QueryRow("INSERT INTO users (first_name, last_name) values ($1, $2) RETURNING id", u.FirstName, u.LastName)
+	row := s.DB.QueryRow("INSERT INTO users (first_name, last_name) values ($1, $2) RETURNING id", u.FirstName, u.LastName)
 	err = row.Scan(&u.ID)
 	return
 }
 
 func (s *UserServiceImpl) Update(id int, u User) (user *User, err error) {
 	stmt := "UPDATE users SET first_name = $1, last_name = $2 WHERE id = $3"
-	_, err = s.db.Exec(stmt, u.FirstName, u.LastName, id)
+	_, err = s.DB.Exec(stmt, u.FirstName, u.LastName, id)
 	if err != nil {
 		return
 	}
@@ -64,6 +64,6 @@ func (s *UserServiceImpl) Update(id int, u User) (user *User, err error) {
 }
 
 func (s *UserServiceImpl) Delete(id int) (err error) {
-	_, err = s.db.Exec("DELETE FROM users WHERE id = $1", id)
+	_, err = s.DB.Exec("DELETE FROM users WHERE id = $1", id)
 	return
 }

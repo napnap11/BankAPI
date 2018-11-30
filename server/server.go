@@ -106,8 +106,8 @@ func (s *Server) deleteUser(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 func (s *Server) CreateBankAccount(c *gin.Context) {
-	var account bankaccount.BankAccount
 	id, _ := strconv.Atoi(c.Param("id"))
+	var account bankaccount.BankAccount
 	err := c.ShouldBindJSON(&account)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{

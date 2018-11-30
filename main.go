@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bankapi/bankaccount"
 	"bankapi/server"
 	"bankapi/user"
 	"database/sql"
@@ -40,12 +41,12 @@ CREATE TABLE IF NOT EXISTS keys (
 	}
 
 	s := &server.Server{
-		db: db,
-		userService: &user.UserServiceImp{
-			db: db,
+		DB: db,
+		UserService: &user.UserServiceImpl{
+			DB: db,
 		},
-		bankService: &bankaccount.BankServiceImpl{
-			db: db,
+		BankService: &bankaccount.BankServiceImpl{
+			DB: db,
 		},
 	}
 

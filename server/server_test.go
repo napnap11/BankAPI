@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bankapi/bankaccount"
 	"bankapi/user"
 	"io/ioutil"
 	"net/http"
@@ -51,10 +52,16 @@ func (s *mockUserService) Delete(id int) (err error) {
 	return
 }
 
+type mockBankService struct{}
+
+func (s *mockBankService) Create(id int, account bankaccount.BankAccount) (err error) {
+	return
+}
+
 func TestUserAll(t *testing.T) {
 	s := &Server{
-		db:          nil,
-		userService: &mockUserService{},
+		DB:          nil,
+		UserService: &mockUserService{},
 	}
 	r := SetupRoute(s)
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:8080/users", nil)
@@ -70,8 +77,8 @@ func TestUserAll(t *testing.T) {
 
 func TestUserByID(t *testing.T) {
 	s := &Server{
-		db:          nil,
-		userService: &mockUserService{},
+		DB:          nil,
+		UserService: &mockUserService{},
 	}
 	r := SetupRoute(s)
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:8080/users/1", nil)
@@ -87,8 +94,8 @@ func TestUserByID(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	s := &Server{
-		db:          nil,
-		userService: &mockUserService{},
+		DB:          nil,
+		UserService: &mockUserService{},
 	}
 	r := SetupRoute(s)
 	user := `{"first_name":"John","last_name":"Doe"}`
@@ -103,8 +110,8 @@ func TestCreateUser(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	s := &Server{
-		db:          nil,
-		userService: &mockUserService{},
+		DB:          nil,
+		UserService: &mockUserService{},
 	}
 	r := SetupRoute(s)
 	user := `{"first_name":"John","last_name":"Doe"}`
@@ -121,11 +128,27 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	s := &Server{
-		db:          nil,
-		userService: &mockUserService{},
+		DB:          nil,
+		UserService: &mockUserService{},
 	}
 	r := SetupRoute(s)
 	req, _ := http.NewRequest(http.MethodDelete, "http://localhost:8080/users/1", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	resp := w.Result()
+	_, err := ioutil.ReadAll(resp.Body)
+	assert.Equal(t, w.Code, http.StatusOK)
+	assert.NoError(t, err)
+}
+
+func TestCreateBankAccount(t *testing.T) {
+	s := &Server{
+		DB:          nil,
+		UserService: &mockUserService{},
+	}
+	r := SetupRoute(s)
+	account := `{"account_number":123456,"name":"John Doe"}`
+	req, _ := http.NewRequest(http.MethodPost, "http://localhost:8080/users/1/bankAccounts", strings.NewReader(account))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	resp := w.Result()
